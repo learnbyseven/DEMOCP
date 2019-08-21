@@ -24,7 +24,7 @@ find /usr/share/ansible/openshift-ansible/  -type f -exec grep -H 'The following
 find /usr/share/ansible/openshift-ansible/  -type f -exec grep -H 'Unable to determine available OpenShift RPM version' {} \;
 
 find /usr/share/ansible/openshift-ansible/  -type f -exec grep -H 'openshift_pkg_version must match same major version as openshift_release' {} \;
-
+Rhn-support-nbhatt
 
 
 
