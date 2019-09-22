@@ -1,12 +1,28 @@
-yum install nfs-utils rpcbind
-systemctl enable nfs-server; systemctl start nfs-server
-systemctl enable rpcbind; systemctl start rpcbind
+#yum install nfs-utils rpcbind
+#systemctl enable nfs-server; systemctl start nfs-server
+#systemctl enable rpcbind; systemctl start rpcbind
 
-mkdir -p /var/nfsshare/pv01
-chmod -R 755 /var/nfsshare/pv01
-chown -R nfsnobody:nfsnobody /var/nfsshare/pv01
+#mkdir -p /var/nfsshare/pv01 && chmod -R 777 /var/nfsshare/pv01 && chown -R nfsnobody:nfsnobody /var/nfsshare/pv01
+#mkdir -p /var/nfsshare/pv02 && chmod -R 777 /var/nfsshare/pv02 && chown -R nfsnobody:nfsnobody /var/nfsshare/pv02
+#mkdir -p /var/nfsshare/pv03 && chmod -R 777 /var/nfsshare/pv03 && chown -R nfsnobody:nfsnobody /var/nfsshare/pv03
+#mkdir -p /var/nfsshare/pv04 && chmod -R 777 /var/nfsshare/pv04 && chown -R nfsnobody:nfsnobody /var/nfsshare/pv04
+#mkdir -p /var/nfsshare/pv05 && chmod -R 777 /var/nfsshare/pv05 && chown -R nfsnobody:nfsnobody /var/nfsshare/pv05
+#mkdir -p /var/nfsshare/pv06 && chmod -R 777 /var/nfsshare/pv06 && chown -R nfsnobody:nfsnobody /var/nfsshare/pv06
+#mkdir -p /var/nfsshare/pv07 && chmod -R 777 /var/nfsshare/pv07 && chown -R nfsnobody:nfsnobody /var/nfsshare/pv07
+#mkdir -p /var/nfsshare/pv08 && chmod -R 777 /var/nfsshare/pv08 && chown -R nfsnobody:nfsnobody /var/nfsshare/pv08
 
-echo /var/nfsshare/pv01 *(rw,sync,no_root_squash) >> /etc/exports
-systemctl stop rpc-bind && systemctl stop nfs-server
-systemctl start rpc-bind && systemctl start nfs-server
 
+echo "/var/nfsshare/pv01 *(rw,sync,no_root_squash)" >> /etc/exports
+echo "/var/nfsshare/pv02 *(rw,sync,no_root_squash)" >> /etc/exports
+echo "/var/nfsshare/pv03 *(rw,sync,no_root_squash)" >> /etc/exports
+echo "/var/nfsshare/pv04 *(rw,sync,no_root_squash)" >> /etc/exports
+echo "/var/nfsshare/pv05 *(rw,sync,no_root_squash)" >> /etc/exports
+echo "/var/nfsshare/pv06 *(rw,sync,no_root_squash)" >> /etc/exports
+echo "/var/nfsshare/pv07 *(rw,sync,no_root_squash)" >> /etc/exports
+echo "/var/nfsshare/pv08 *(rw,sync,no_root_squash)" >> /etc/exports
+#systemctl stop rpc-bind && systemctl stop nfs-server
+#systemctl start rpc-bind && systemctl start nfs-server
+firewall-cmd --permanent --zone=public --add-service=nfs
+firewall-cmd --permanent --zone=public --add-service=mountd
+firewall-cmd --permanent --zone=public --add-service=rpc-bind
+firewall-cmd --reload                                                                                                                                                                                              
