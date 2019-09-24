@@ -2,6 +2,15 @@
 #systemctl enable nfs-server; systemctl start nfs-server
 #systemctl enable rpcbind; systemctl start rpcbind
 
+
+sudo apt install nfs-kernel-server
+mkdir -p /var/nfsshare/pv01 && chmod -R 777 /var/nfsshare/pv01 && chown -R nobody:nogroup /var/nfsshare/pv01
+mkdir -p /var/nfsshare/pv02 && chmod -R 777 /var/nfsshare/pv02 && chown -R nobody:nogroup /var/nfsshare/pv02
+mkdir -p /var/nfsshare/pv03 && chmod -R 777 /var/nfsshare/pv03 && chown -R nobody:nogroup /var/nfsshare/pv03
+mkdir -p /var/nfsshare/pv04 && chmod -R 777 /var/nfsshare/pv04 && chown -R nobody:nogroup /var/nfsshare/pv04
+mkdir -p /var/nfsshare/pv05 && chmod -R 777 /var/nfsshare/pv05 && chown -R nobody:nogroup /var/nfsshare/pv05
+
+
 #mkdir -p /var/nfsshare/pv01 && chmod -R 777 /var/nfsshare/pv01 && chown -R nfsnobody:nfsnobody /var/nfsshare/pv01
 #mkdir -p /var/nfsshare/pv02 && chmod -R 777 /var/nfsshare/pv02 && chown -R nfsnobody:nfsnobody /var/nfsshare/pv02
 #mkdir -p /var/nfsshare/pv03 && chmod -R 777 /var/nfsshare/pv03 && chown -R nfsnobody:nfsnobody /var/nfsshare/pv03
