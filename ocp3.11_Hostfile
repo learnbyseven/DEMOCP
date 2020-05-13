@@ -1,0 +1,62 @@
+nventory file for installing openshift OCP 3.11
+[OSEv3:children] masters nodes etcd lb
+
+Variables
+[OSEv3:vars] ansible_ssh_user=root ansible_become=true openshift_clock_enabled=true deployment_type=openshift-enterprise openshift_release=v3.11 openshift_examples_modify_imagestreams=true openshift_docker_options=
+
+Networking & Load Balancer
+os_sdn_network_plugin_name='redhat/openshift-ovs-networkpolicy' os_firewall_use_firewalld=True openshift_master_default_subdomain=cloudapps.wbsdc.in openshift_master_cluster_method=native openshift_master_cluster_hostname=wb-scd-ocp-lb.wbsdc.in openshift_master_cluster_public_hostname=wb-scd-ocp-lb.wbsdc.in openshift_master_console_port=8443 openshift_master_api_port=8443
+
+Router & Registry Replicas
+openshift_hosted_router_replicas=2 openshift_hosted_registry_replicas=2
+
+Authentication Provider
+openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider'}]
+
+Safegaurd
+openshift_disable_check=docker_storage,memory_availability,disk_availability,docker_image_availability,package_version openshift_enable_unsupported_configurations=True
+
+Open Broker
+template_service_broker_install=true ansible_service_broker_install=false openshift_enable_service_catalog=true
+
+Registry Authentication
+oreg_url=registry.redhat.io/openshift3/ose-${component}:${version} oreg_auth_user=rhn-support-grajawat oreg_auth_password= oreg_test_login=false
+
+Metrics
+openshift_metrics_install_metrics=true openshift_prometheus_state=true openshift_cluster_monitoring_operator_install=true
+
+Logging EFK
+openshift_logging_install_logging=true openshift_logging_es_cpu_limit=3000m openshift_logging_es_memory_limit=2000M openshift_logging_fluentd_cpu_limit=1000m openshift_logging_fluentd_memory_limit=1000M openshift_logging_kibana_cpu_limit=2000m openshift_logging_kibana_memory_limit=2000M openshift_logging_es_nodeselector={'node-role.kubernetes.io/infra':'true'}
+
+Host Groups
+Masters Control Plane
+[masters]
+wb-sdc-ocp-mst01.wbsdc.in openshift_node_group_name="node-config-master" wb-sdc-ocp-mst02.wbsdc.in openshift_node_group_name="node-config-master" wb-sdc-ocp-mst03.wbsdc.in openshift_node_group_name="node-config-master"
+
+Nodes
+[nodes] wb-sdc-ocp-mst01.wbsdc.in openshift_node_group_name="node-config-master" wb-sdc-ocp-mst02.wbsdc.in openshift_node_group_name="node-config-master" wb-sdc-ocp-mst03.wbsdc.in openshift_node_group_name="node-config-master" wb-sdc-ocp-inf01.wbsdc.in openshift_node_group_name="node-config-infra" wb-sdc-ocp-inf02.wbsdc.in openshift_node_group_name="node-config-infra" wb-sdc-ocp-app01.wbsdc.in openshift_node_group_name="node-config-compute" wb-sdc-ocp-app02.wbsdc.in openshift_node_group_name="node-config-compute"
+
+Cluster Datastore ETCD
+[etcd] wb-sdc-ocp-mst01.wbsdc.in wb-sdc-ocp-mst02.wbsdc.in wb-sdc-ocp-mst03.wbsdc.in
+
+Load Balancer
+[lb] wb-scd-ocp-lb.wbsdc.in
+
+SCRIPTS
+wb-sdc-ocp-bastion.wbsdc.in 172.20.47.230/22 bash
+ssh=keygen for host in wb-sdc-ocp-mst01.wbsdc.in
+wb-sdc-ocp-mst02.wbsdc.in \ wb-sdc-ocp-mst03.wbsdc.in \ wb-sdc-ocp-inf01.wbsdc.in
+wb-sdc-ocp-inf02.wbsdc.in
+wb-sdc-ocp-app01.wbsdc.in
+wb-sdc-ocp-app02.wbsdc.in
+wb-scd-ocp-lb.wbsdc.in; \ do ssh-copy-id -i ~/.ssh/id_rsa.pub $host;
+done
+
+subscription-manager register --username=grajawat@redhat.com --password=
+subscription-manager refresh
+subscription-manager attach --pool=FAKE8a85f9833e1404a9013e3cddf99305e61982
+subscription-manager repos --disable="*"
+subscription-manager repos --enable={rhel-7-server-rpms,rhel-7-server-extras-rpms,rhel-7-server-ose-3.11-rpms,rhel-7-server-ansible-2.6-rpms}
+yum install wget git net-tools bind-utils yum-utils iptables-services bridge-utils bash-completion kexec-tools sos psacct openshift-ansible
+
+© 2020 GitHub, Inc.
