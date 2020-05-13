@@ -1,0 +1,10 @@
+# rhel7setup
+initial setup
+
+### subscription-manager register --username <> --password <> --auto-attach
+### subscription-manager repos --list-enabled
+### subscription-manager repos --enable={rhel-7-server-rpms,rhel-7-server-optional-rpms,rhel-7-server-extras-rpms,rhel-7-server-ose-3.7-rpms, rhel-7-fast-datapath-rpms}
+### subscription-manager list --available -all
+### subscription-manager remove --all
+### subscription-manager unregister
+### subscription-manager clean 
