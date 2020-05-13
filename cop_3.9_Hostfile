@@ -1,0 +1,159 @@
+#Inventory file for installing openshift : 8114419711
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+
+### Create an OSEv3 group that contains the masters, nodes, and etcd groups
+[OSEv3:children]
+masters
+nodes
+etcd
+glusterfs
+lb
+
+### Set variables common for all OSEv3 hosts
+[OSEv3:vars]
+ansible_user=root
+ansible_ssh_user=root
+deployment_type=openshift-enterprise
+openshift_release=v3.9
+openshift_master_console_port=8443
+openshift_master_api_port=8443
+
+
+### REGISTRY
+openshift_docker_additional_registries=rhn.whccs.nic.in:5000
+openshift_docker_insecure_registries=rhn.whccs.nic.in:5000
+openshift_docker_blocked_registries=registry.access.redhat.com,docker.io
+oreg_url=rhn.whccs.nic.in:5000/webhosting-containers-ose-${component}:${version}
+openshift_examples_modify_imagestreams=true
+
+### COCKPIT
+openshift_cockpit_deployer_prefix=rhn.whccs.nic.in:5000/webhosting-containers-
+openshift_cockpit_deployer_version=latest
+openshift_web_console_prefix=rhn.whccs.nic.in:5000/webhosting-containers-ose-
+openshift_web_console_version=latest
+
+### LOGGING
+openshift_logging_install_logging=true
+openshift_logging_es_node_selector={"region":"infra"}
+openshift_logging_image_prefix=rhn.whccs.nic.in:5000/webhosting-containers-
+openshift_logging_es_node_selector={"role":"infra"}
+openshift_logging_es_memory_limit=5G
+
+
+### ASB
+ansible_service_broker_image_prefix=rhn.whccs.nic.in:5000/webhosting-containers-
+ansible_service_broker_image_tag=latest
+ansible_service_broker_etcd_image_prefix=rhn.whccs.nic.in:5000/webhosting-containers-
+ansible_service_broker_etcd_image_tag=latest
+
+### SERVICE CATALOG
+openshift_service_catalog_image_prefix=rhn.whccs.nic.in:5000/webhosting-containers-
+openshift_service_catalog_image_version=latest
+template_service_broker_prefix=rhn.whccs.nic.in:5000/webhosting-containers-
+template_service_broker_version=latest
+
+
+### GLUSTER CRS Container Ready Storage  
+
+openshift_storage_glusterfs_namespace=crs
+openshift_storage_glusterfs_block_deploy=true
+openshift_storage_glusterfs_wipe=true
+openshift_storage_glusterfs_is_native=false
+openshift_storage_glusterfs_storageclass=true
+openshift_storage_glusterfs_heketi_is_native=true
+openshift_storage_glusterfs_heketi_executor=ssh
+openshift_storage_glusterfs_heketi_ssh_port=22
+openshift_storage_glusterfs_heketi_ssh_user=root
+openshift_storage_glusterfs_heketi_ssh_sudo=false
+openshift_storage_glusterfs_heketi_ssh_keyfile="/root/.ssh/id_rsa"
+
+
+
+### INTERNAL Cluster and load balance setup #####
+openshift_master_cluster_hostname=lb.whccs.nic.in
+
+### EXTERNAL LB RADWARE ###
+openshift_master_cluster_public_hostname=lb.whccs.nic.in
+
+### Authentication Provider settings.
+### openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider', 'filename': '/etc/ocpauth/users.htpasswd'}]
+
+### Docker options
+openshift_docker_options="--insecure-registry 172.30.0.0/16"
+
+### Enable Network Time Protocol (NTP) to prevent masters and nodes in the cluster from going out of sync.
+openshift_clock_enabled=true
+
+### Default subdomain
+openshift_master_default_subdomain=cloudapps.whccs.nic.in
+
+##Default nodes for router, registry and application pods
+openshift_hosted_router_selector='role=infra'
+openshift_registry_selector='role=infra'
+osm_default_node_selector='role=app'
+
+## ROUTER & REGISTRY REPLICAS
+openshift_hosted_router_replicas=3
+openshift_hosted_registry_replicas=3
+
+#openshift_disable_check=memory_availability,disk_availability,docker_storage
+openshift_disable_check = docker_storage,memory_availability,disk_availability,docker_image_availability,package_version
+
+
+##Configure kubeletArguments on nodes
+openshift_node_kubelet_args={'image-gc-high-threshold': ['80'], 'image-gc-low-threshold': ['70']}
+
+###Enable Openshift multi-tenant plugin
+os_sdn_network_plugin_name='redhat/openshift-ovs-multitenant'
+
+###Pod Network CIDR, default(10.0.0.0/14)
+osm_cluster_network_cidr=10.0.0.0/14
+
+###Service Network CIDR, default(172.30.0.0/16).
+openshift_portal_net=172.30.0.0/16
+
+##Audit Configuration
+openshift_master_audit_config={"enabled": true, "auditFilePath": "/var/log/oscp-audit/oscp-audit.log", "maximumFileRetentionDays": 15, "maximumFileSizeMegabytes": 200, "maximumRetainedFiles": 10}
+
+#Prometheus deployment
+openshift_hosted_prometheus_deploy=true
+
+# Grafana deployment, requires Prometheus
+openshift_hosted_grafana_deploy=true
+
+##Host group for masters
+[masters]
+mst01.whccs.nic.in openshift_hostname=mst01.whccs.nic.in
+mst02.whccs.nic.in openshift_hostname=mst02.whccs.nic.in
+mst03.whccs.nic.in openshift_hostname=mst03.whccs.nic.in
+
+##Host group for etcd
+[etcd]
+mst01.whccs.nic.in openshift_hostname=mst01.whccs.nic.in
+mst02.whccs.nic.in openshift_hostname=mst02.whccs.nic.in
+mst03.whccs.nic.in openshift_hostname=mst03.whccs.nic.in
+
+
+##Host group for nodes
+[nodes]
+mst01.whccs.nic.in openshift_hostname=mst01.whccs.nic.in
+mst02.whccs.nic.in openshift_hostname=mst02.whccs.nic.in
+mst03.whccs.nic.in openshift_hostname=mst03.whccs.nic.in
+inf01.whccs.nic.in openshift_hostname=inf01.whccs.nic.in openshift_node_labels="{'cluster': 'stag', 'role': 'infra'}"
+inf02.whccs.nic.in openshift_hostname=inf02.whccs.nic.in openshift_node_labels="{'cluster': 'stag', 'role': 'infra'}"
+inf03.whccs.nic.in openshift_hostname=inf03.whccs.nic.in openshift_node_labels="{'cluster': 'stag', 'role': 'infra'}"
+wrk01.whccs.nic.in openshift_hostname=wrk01.whccs.nic.in openshift_node_labels="{'cluster': 'stag', 'role': 'app'}"
+wrk02.whccs.nic.in openshift_hostname=wrk02.whccs.nic.in openshift_node_labels="{'cluster': 'stag', 'role': 'app'}"
+wrk03.whccs.nic.in openshift_hostname=wrk03.whccs.nic.in openshift_node_labels="{'cluster': 'stag', 'role': 'app'}"
+
+### GLUSTER FS 
+[gfs]
+crs01.whccs.nic.in openshift_hostname=crs01.whccs.nic.in glusterfs_ip=10.247. glusterfs_devices='[ "/dev/sdb" ]'
+crs02.whccs.nic.in openshift_hostname=crs01.whccs.nic.in glusterfs_ip=10.247 glusterfs_devices='[ "/dev/sdb" ]'
+crs03.whccs.nic.in openshift_hostname=crs01.whccs.nic.in glusterfs_ip=10.247 glusterfs_devices='[ "/dev/sdb" ]'
+
+### LOAD BALANCER INTERNAL 
+[lb]
+lb.whccs.nic.in
+© 2020 GitHub, Inc.
