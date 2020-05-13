@@ -1,0 +1,55 @@
+[OSEv3:vars]
+ansible_ssh_user=root
+openshift_clock_enabled=true
+openshift_disable_check=memory_availability,package_availability,disk_availability,docker_image_availability,docker_storage,package_version
+openshift_docker_options="--log-driver=json-file --log-opt max-size=50m"
+
+ 
+#; CALICO CONFIGURATION
+openshift_use_calico=true
+openshift_use_openshift_sdn=false
+os_sdn_network_plugin_name='cni'
+calico_ipv4pool_ipip=true
+ 
+ 
+; OPENSHIFT COMMON CONFIGURATION
+openshift_deployment_type=openshift-enterprise
+openshift_enable_service_catalog=false
+ 
+; OPENSHIFT NETWORKING
+openshift_master_cluster_ip=192.168.124.91
+openshift_portal_net=10.60.0.0/16
+osm_cluster_network_cidr=10.70.0.0/24
+ 
+; OPENSHIFT AUTHORIZATION
+openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider', 'filename': '/etc/origin/master/users.htpasswd'}]
+ 
+; OPENSHIFT CLUSTER CONFIGURATION
+openshift_master_cluster_method=native
+openshift_master_cluster_hostname=mc1.192.168.124.91.nip.io
+openshift_master_cluster_public_hostname=mc1.192.168.124.91.nip.io
+openshift_master_default_subdomain=apps.mc1.192.168.124.91.nip.io
+ 
+ 
+[OSEv3:children]
+masters
+nodes
+etcd
+ 
+
+#ROUTER & REGISTRY
+
+openshift_hosted_router_selector='region=infra'
+openshift_hosted_router_replicas=1
+openshift_hosted_registry_selector='region=infra'
+openshift_hosted_registry_replicas=1
+
+[masters]
+mc1.192.168.124.91.nip.io openshift_node_labels="{'region': 'infra', 'zone':'default'}" openshift_schedulable=true
+
+[nodes]
+mc1.192.168.124.91.nip.io openshift_node_labels="{'region': 'infra', 'zone':'default'}" openshift_schedulable=true
+nc1.192.168.124.92.nip.io openshift_node_labels="{'region': 'primary', 'zone':'east'}"
+
+[etcd]
+mc1.192.168.124.91.nip.io openshift_node_labels="{'region': 'infra', 'zone':'default'}" openshift_schedulable=true
